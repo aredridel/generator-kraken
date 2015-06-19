@@ -12,7 +12,7 @@ module.exports = function (router) {
 
 
     router.get('<%= route %>', function (req, res) {
-        <% if (hasTemplates) { %>
+        <% if (templateModule) { %>
         <% if (useJson) { %>
         res.format({
             json: function () {

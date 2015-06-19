@@ -26,9 +26,6 @@ module.exports = function (generator) {
             name: 'appName',
             validate: function (str) {
                 return !!str;
-            },
-            when: function () {
-                return generator.appName == null;
             }
         },
 
@@ -65,10 +62,7 @@ module.exports = function (generator) {
                     name: 'None',
                     value: false
                 }
-            ],
-            when: function () {
-                return generator.templateModule == null;
-            }
+            ]
         },
 
         {
@@ -84,29 +78,7 @@ module.exports = function (generator) {
                     name: 'No',
                     value: false
                 }
-            ],
-            when: function () {
-                return generator.i18n == null && generator.templateModule !== 'makara';
-            }
-        },
-
-        {
-            message: 'Include i18n support?',
-            type: 'list',
-            name: 'i18nMakara',
-            choices: [
-                {
-                    name: 'Yes',
-                    value: true
-                },
-                {
-                    name: 'No',
-                    value: false
-                }
-            ],
-            when: function () {
-                return generator.i18nMakara == null && generator.templateModule === 'makara';
-            }
+            ]
         },
 
         {
@@ -149,10 +121,7 @@ module.exports = function (generator) {
                     name: 'None',
                     value: false
                 }
-            ],
-            when: function () {
-                return generator.cssModule == null;
-            }
+            ]
         },
 
         {
@@ -172,10 +141,7 @@ module.exports = function (generator) {
                     name: 'None',
                     value: false
                 }
-            ],
-            when: function () {
-                return generator.jsModule == null;
-            }
+            ]
         }
 
     ];

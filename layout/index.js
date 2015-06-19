@@ -20,16 +20,21 @@
 
 var path = require('path');
 var yeoman = require('yeoman-generator');
+var debug = require('debuglog')('generator-kraken');
 
 module.exports = yeoman.generators.NamedBase.extend({
-    defaults: function defaults() {
-        this.argument('country', { type: String, required: false, defaults: 'US' });
-        this.argument('language', { type: String, required: false, defaults: 'en' });
+    init: function () {
+        debug("layout");
+        // Create the corresponding locale as well
+        this.composeWith('kraken:locale', { args: this.args });
     },
 
     files: function files() {
-        var filepath = path.join('locales', this.country.toUpperCase(), this.language.toLowerCase(), this.name + '.properties');
-
-        this.fs.copyTpl(this.templatePath('index.properties'), this.destinationPath(filepath));
+        debug("creating layout '%s'", this.name);
+        this.fs.copyTpl(
+            this.templatePath('layout.dust'),
+            this.destinationPath(path.join('public', 'templates', this.name + '.dust')),
+            this.config.getAll()
+        );
     }
 });

@@ -23,7 +23,7 @@ var yeoman = require('yeoman-generator');
 var krakenutil = require('../util');
 var debug = require('debuglog')('generator-kraken');
 
-module.exports = yeoman.generators.Base.extend({
+module.exports = yeoman.generators.NamedBase.extend({
     init: function () {
 
         krakenutil.update();
@@ -32,16 +32,14 @@ module.exports = yeoman.generators.Base.extend({
         this.composeWith('kraken:locale', { args: this.args }, { link: 'strong' });
     },
 
-    defaults: function defaults() {
-        this.argument('name', { type: String, required: true });
-    },
-
-
     files: function files() {
         debug("creating template '%s'", this.name);
         this.fs.copyTpl(
             this.templatePath(this.options.type === 'layout' ? 'layout.dust' : 'template.dust'),
-            this.destinationPath(path.join('public', 'templates', this.name + '.dust'))
+            this.destinationPath(path.join('public', 'templates', this.name + '.dust')),
+            {
+                jsModule: this.options.jsModule
+            }
         );
     }
 });

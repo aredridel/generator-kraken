@@ -22,38 +22,26 @@ var path = require('path'),
     yeoman = require('yeoman-generator'),
     krakenutil = require('../util'),
     prompts = require('./prompts'),
-    us = require('underscore.string'),
-    fs = require('fs');
+    us = require('underscore.string');
 
+krakenutil.update();
 
-module.exports = yeoman.generators.Base.extend({
+module.exports = yeoman.generators.NamedBase.extend({
+    defaults: function () {
+        this.config.defaults({
+            templateModule: null,
+            useJson: null
+        });
+    },
+
     init: function () {
-        var filePath = this.destinationPath('package.json');
-
-        krakenutil.update();
-
-        this.hasTemplates = this.options.templateModule || hasTemplates(filePath);
-
         // Create the corresponding model and template as well
-        this.composeWith('kraken:model', { args: this.args }, { link: 'strong' });
+        this.composeWith('kraken:model', { args: this.args });
 
-        //if there is a templateModule selected
-        if (this.hasTemplates) {
-            this.composeWith('kraken:template', { args: this.args }, { link: 'strong' });
+        if (this.config.get('templateModule')) {
+            this.composeWith('kraken:template', { args: this.args });
         }
 
-        this.argument('name', { type: String, required: true });
-
-        this.useJson = null;
-
-        var parts = krakenutil.parsePath(this.name);
-        parts.modelPath = path.join(parts.root, 'models', parts.model);
-        parts.specPath = path.join(parts.root, 'lib', 'spec');
-        if (path.sep === '\\') {
-            parts.modelPath = parts.modelPath.replace(/\\/g, '/');
-            parts.specPath = parts.specPath.replace(/\\/g, '/');
-        }
-        krakenutil.extend(this, parts);
     },
 
     prompting: {
@@ -77,36 +65,40 @@ module.exports = yeoman.generators.Base.extend({
 
     writing: {
         files: function files() {
+            var model = this._getModel();
             this.fs.copyTpl(
                 this.templatePath('controller.js'),
-                this.destinationPath(path.join('controllers', this.fullpath + '.js')),
-                {
-                    model: this.model,
-                    us: us,
-                    hasTemplates: this.hasTemplates,
-                    useJson: this.useJson,
-                    fullname: this.fullname,
-                    modelPath: this.modelPath,
-                    route: this.route
-                }
+                this.destinationPath(path.join('controllers', model.fullpath + '.js')),
+                model
             );
             this.fs.copyTpl(
                 this.templatePath('test.js'),
-                this.destinationPath(path.join('test', this.fullpath + '.js')),
-                {
-                    hasTemplates: this.hasTemplates,
-                    fullroute: this.fullroute
-                }
+                this.destinationPath(path.join('test', model.fullpath + '.js')),
+                model
             );
         }
+    },
+
+    _getModel: function () {
+        var model = {
+            model: this.model,
+            us: us
+        };
+
+        var parts = krakenutil.parsePath(this.name);
+        parts.modelPath = path.join(parts.root, 'models', parts.model);
+        parts.specPath = path.join(parts.root, 'lib', 'spec');
+        if (path.sep === '\\') {
+            parts.modelPath = parts.modelPath.replace(/\\/g, '/');
+            parts.specPath = parts.specPath.replace(/\\/g, '/');
+        }
+        krakenutil.extend(model, parts);
+
+        var conf = this.config.getAll();
+        for (var k in conf) {
+            model[k] = conf[k];
+        }
+
+        return model;
     }
 });
-
-
-function hasTemplates(filePath) {
-    try {
-        return JSON.parse(fs.readFileSync(filePath, 'utf-8'))['generator-kraken'].template;
-    } catch (e) {
-        return null;
-    }
-}

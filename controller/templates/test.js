@@ -36,7 +36,7 @@ describe('<%= fullroute %>', function () {
             .get('<%= fullroute %>')
             .expect(200)
             .expect('Content-Type', /html/)
-            <% if (hasTemplates) { %>
+            <% if (templateModule) { %>
                 .expect(/Hello, /)
             <% } else { %>
                 .expect(/"name": "index"/)
