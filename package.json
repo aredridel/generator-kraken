@@ -27,6 +27,8 @@
   "dependencies": {
     "chalk": "^1.0.0",
     "debuglog": "^1.0.1",
+    "findup": "^0.1.5",
+    "kraken-upgrader-2": "^1.0.0-0",
     "mkdirp": "^0.5.1",
     "underscore.string": "^3.1.1",
     "update-notifier": "^0.3.1",
